@@ -64,6 +64,13 @@ html, body {
   overflow-x: hidden;
 }
 
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: var(--bg);
@@ -92,20 +99,23 @@ main {
 }
 
   header {
-    background: var(--primary);
-    color: var(--white);
-    padding: 20px 24px;
-  }
+  background: var(--primary);
+  color: var(--white);
+  padding: 20px 32px;
+  width: 100%;
+}
   header h1 { font-size: 1.5rem; font-weight: 600; }
 
   /* Progress Stepper — accessible */
   .stepper {
-    display: flex;
-    gap: 4px;
-    margin: 24px 0;
-    padding: 0;
-    list-style: none;
-  }
+  display: flex;
+  gap: 4px;
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  justify-content: space-between;
+}
   .stepper li {
     flex: 1;
     text-align: center;
@@ -144,13 +154,15 @@ main {
   }
 
   /* Card */
-  .card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px;
-    margin-bottom: 20px;
-  }
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: none;
+}
 
   /* Form elements */
   .form-group { margin-bottom: 20px; }
@@ -365,11 +377,12 @@ main {
   }
 
   /* Data table — accessible */
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 12px 0;
-  }
+ .data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  table-layout: auto;
+}
   .data-table th, .data-table td {
     padding: 12px 14px;
     text-align: left;
@@ -473,6 +486,17 @@ main {
     font-weight: 600;
     color: var(--white);
   }
+  main,
+form,
+.step,
+.accordion,
+.accordion-panel,
+.bar-chart,
+.bar-row,
+.slider-group {
+  width: 100%;
+  max-width: 100%;
+}
 </style>
 </head>
 <body>
