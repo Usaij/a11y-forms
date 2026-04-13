@@ -5,38 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anlageberatung — Barrierefreies Formular</title>
 <style>
+  /* ── Design tokens ── */
   :root {
     --primary: #1a3a5c;
-    --primary-light: #2d5f8a;
+    --primary-hover: #244d75;
     --accent: #0d7c5f;
     --accent-light: #e8f5f0;
     --danger: #c53030;
-    --text: #1a202c;
-    --text-secondary: #4a5568;
-    --border: #cbd5e0;
-    --bg: #f7fafc;
-    --white: #ffffff;
-    --focus: #2b6cb0;
+    --text: #1e293b;
+    --text-muted: #556171;
+    --border: #d1d9e2;
+    --border-light: #e8edf2;
+    --bg-card: #ffffff;
+    --bg-page: #ffffff;       /* white – blends with Appian card */
+    --bg-subtle: #f4f7fa;
+    --focus-ring: #2563eb;
     --radius: 8px;
+    --radius-lg: 12px;
+    --shadow-card: 0 1px 4px rgba(0,0,0,.07), 0 0 0 1px rgba(0,0,0,.04);
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --transition: 0.15s ease;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
+    font-family: var(--font);
+    background: var(--bg-page);
     color: var(--text);
     line-height: 1.6;
-    font-size: 16px;
+    font-size: 15px;
+    overflow-x: hidden;
   }
 
-  /* Skip Link */
+  /* ── Skip Link ── */
   .skip-link {
     position: absolute;
     top: -100px;
     left: 16px;
     background: var(--primary);
-    color: var(--white);
+    color: #fff;
     padding: 12px 24px;
     z-index: 1000;
     border-radius: 0 0 var(--radius) var(--radius);
@@ -44,70 +52,73 @@
     text-decoration: none;
     transition: top 0.2s;
   }
-  .skip-link:focus {
-    top: 0;
-    outline: 3px solid var(--focus);
-    outline-offset: 2px;
+  .skip-link:focus { top: 0; outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+
+  /* ── Focus ── */
+  :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+
+  /* ── Layout – fill the iframe, no max-width cap ── */
+  .form-wrapper {
+    padding: 20px 28px 32px;
   }
 
-  /* Focus styles */
-  :focus-visible {
-    outline: 3px solid var(--focus);
-    outline-offset: 2px;
-  }
-
-  /* Layout */
-  .form-container {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 24px;
-  }
-
-  header {
-    background: var(--primary);
-    color: var(--white);
-    padding: 20px 24px;
-  }
-  header h1 { font-size: 1.5rem; font-weight: 600; }
-
-  /* Progress Stepper — accessible */
+  /* ── Stepper ── */
   .stepper {
     display: flex;
-    gap: 4px;
-    margin: 24px 0;
+    align-items: flex-start;
+    gap: 0;
+    margin: 0 0 28px;
     padding: 0;
     list-style: none;
+    position: relative;
+  }
+  .stepper::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 18%;
+    right: 18%;
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
   }
   .stepper li {
     flex: 1;
     text-align: center;
     position: relative;
+    z-index: 1;
   }
   .stepper-dot {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    background: var(--border);
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 0.875rem;
-    margin-bottom: 6px;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    transition: all var(--transition);
   }
   .stepper li[aria-current="step"] .stepper-dot {
     background: var(--primary);
-    color: var(--white);
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(26,58,92,.15);
   }
   .stepper li.completed .stepper-dot {
     background: var(--accent);
-    color: var(--white);
+    border-color: var(--accent);
+    color: #fff;
   }
   .stepper-label {
     display: block;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+    font-size: 0.78rem;
+    letter-spacing: 0.01em;
+    color: var(--text-muted);
     font-weight: 500;
   }
   .stepper li[aria-current="step"] .stepper-label {
@@ -115,58 +126,79 @@
     font-weight: 700;
   }
 
-  /* Card */
+  /* ── Card ── */
   .card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px;
-    margin-bottom: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 28px 28px 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-card);
   }
 
-  /* Form elements */
+  /* ── Section headings ── */
+  .card h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 2px;
+  }
+  .card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .section-hint {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 4px 0 20px;
+  }
+
+  /* ── Form elements ── */
   .form-group { margin-bottom: 20px; }
-  .form-group label, .form-group legend {
+  .form-group label,
+  .form-group legend {
     display: block;
     font-weight: 600;
     margin-bottom: 6px;
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.92rem;
   }
-  .form-group .hint {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
+  .hint {
+    color: var(--text-muted);
+    font-size: 0.82rem;
     margin-bottom: 6px;
   }
 
-  /* Radio buttons — custom styled but accessible */
-  .radio-group {
-    border: none;
-    padding: 0;
-  }
+  /* ── Radios ── */
+  .radio-group { border: none; padding: 0; }
   .radio-group legend {
     font-weight: 600;
-    margin-bottom: 10px;
-    font-size: 1rem;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
   }
   .radio-option {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-    border: 2px solid var(--border);
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border);
     border-radius: var(--radius);
     margin-bottom: 8px;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
   }
-  .radio-option:hover { border-color: var(--primary-light); background: #f0f4f8; }
+  .radio-option:hover {
+    border-color: var(--primary-hover);
+    background: var(--bg-subtle);
+  }
   .radio-option:has(input:checked) {
     border-color: var(--primary);
-    background: #edf2f7;
+    background: #eef3f8;
+    box-shadow: inset 3px 0 0 var(--primary);
   }
   .radio-option:has(input:focus-visible) {
-    outline: 3px solid var(--focus);
+    outline: 3px solid var(--focus-ring);
     outline-offset: 2px;
   }
   .radio-option input[type="radio"] {
@@ -175,31 +207,32 @@
     accent-color: var(--primary);
     flex-shrink: 0;
   }
-  .radio-option .radio-label { font-weight: 500; }
-  .radio-option .radio-desc {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin-top: 2px;
+  .radio-label { font-weight: 600; font-size: 0.93rem; }
+  .radio-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+    line-height: 1.4;
   }
 
-  /* Text inputs */
+  /* ── Inputs ── */
   input[type="text"], input[type="email"], input[type="number"], input[type="tel"],
   select, textarea {
     width: 100%;
-    padding: 12px 14px;
-    border: 2px solid var(--border);
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
     border-radius: var(--radius);
-    font-size: 1rem;
-    font-family: inherit;
+    font-size: 0.95rem;
+    font-family: var(--font);
     color: var(--text);
-    background: var(--white);
-    transition: border-color 0.15s;
+    background: var(--bg-card);
+    transition: border-color var(--transition);
   }
   input:focus, select:focus, textarea:focus {
-    border-color: var(--focus);
+    border-color: var(--focus-ring);
   }
 
-  /* Accessible slider with number input */
+  /* ── Slider ── */
   .slider-group {
     display: flex;
     align-items: center;
@@ -212,61 +245,62 @@
     cursor: pointer;
   }
   .slider-group input[type="number"] {
-    width: 140px;
+    width: 130px;
     flex-shrink: 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
   }
   .slider-range {
     display: flex;
     justify-content: space-between;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+    font-size: 0.78rem;
+    color: var(--text-muted);
     margin-top: 4px;
   }
 
-  /* Accordion / Expandable sections — accessible */
+  /* ── Accordion ── */
+  .accordion { margin-bottom: 8px; }
   .accordion-trigger {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
-    background: var(--white);
-    border: 2px solid var(--border);
+    padding: 14px 18px;
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius);
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.93rem;
     font-weight: 600;
     color: var(--text);
     text-align: left;
-    font-family: inherit;
-    transition: border-color 0.15s;
-    margin-bottom: 4px;
+    font-family: var(--font);
+    transition: border-color var(--transition), background var(--transition);
   }
-  .accordion-trigger:hover { border-color: var(--primary-light); }
+  .accordion-trigger:hover { border-color: var(--primary-hover); background: #edf1f6; }
   .accordion-trigger[aria-expanded="true"] {
     border-color: var(--primary);
+    background: var(--bg-card);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    margin-bottom: 0;
   }
   .accordion-trigger .arrow {
     transition: transform 0.2s;
-    font-size: 1.2rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
   }
-  .accordion-trigger[aria-expanded="true"] .arrow {
-    transform: rotate(180deg);
-  }
+  .accordion-trigger[aria-expanded="true"] .arrow { transform: rotate(180deg); }
   .accordion-panel {
-    border: 2px solid var(--primary);
+    border: 1.5px solid var(--primary);
     border-top: none;
     border-radius: 0 0 var(--radius) var(--radius);
     padding: 20px;
-    background: var(--white);
+    background: var(--bg-card);
     margin-bottom: 8px;
   }
   .accordion-panel[hidden] { display: none; }
 
-  /* Checkboxes — accessible */
+  /* ── Checkboxes ── */
   .checkbox-option {
     display: flex;
     align-items: flex-start;
@@ -281,51 +315,55 @@
     margin-top: 2px;
   }
 
-  /* Buttons */
+  /* ── Buttons ── */
   .btn-group {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    margin-top: 28px;
+    margin-top: 24px;
     padding-top: 20px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-light);
   }
   .btn {
-    padding: 14px 32px;
-    border: 2px solid transparent;
+    padding: 12px 28px;
+    border: none;
     border-radius: var(--radius);
-    font-size: 1rem;
+    font-size: 0.93rem;
     font-weight: 600;
     cursor: pointer;
-    font-family: inherit;
-    transition: background 0.15s, border-color 0.15s;
+    font-family: var(--font);
+    transition: background var(--transition), box-shadow var(--transition);
+    letter-spacing: 0.01em;
   }
   .btn-primary {
     background: var(--primary);
-    color: var(--white);
+    color: #fff;
   }
-  .btn-primary:hover { background: var(--primary-light); }
+  .btn-primary:hover { background: var(--primary-hover); }
   .btn-secondary {
-    background: var(--white);
+    background: var(--bg-subtle);
     color: var(--text);
-    border-color: var(--border);
+    border: 1.5px solid var(--border);
   }
-  .btn-secondary:hover { background: #f0f4f8; }
+  .btn-secondary:hover { background: #e8edf2; }
 
-  /* File upload — accessible */
+  /* ── File upload ── */
   .file-upload {
     border: 2px dashed var(--border);
     border-radius: var(--radius);
-    padding: 24px;
+    padding: 20px;
     text-align: center;
     cursor: pointer;
-    transition: border-color 0.15s;
+    transition: border-color var(--transition), background var(--transition);
+    background: var(--bg-subtle);
   }
-  .file-upload:hover, .file-upload:focus-within { border-color: var(--primary); }
+  .file-upload:hover, .file-upload:focus-within {
+    border-color: var(--primary);
+    background: #eef3f8;
+  }
   .file-upload input[type="file"] {
     position: absolute;
-    width: 1px;
-    height: 1px;
+    width: 1px; height: 1px;
     overflow: hidden;
     clip: rect(0,0,0,0);
   }
@@ -334,24 +372,28 @@
     font-weight: 600;
     color: var(--primary);
     cursor: pointer;
+    font-size: 0.92rem;
   }
 
-  /* Data table — accessible */
+  /* ── Data table ── */
   .data-table {
     width: 100%;
     border-collapse: collapse;
     margin: 12px 0;
+    font-size: 0.88rem;
   }
   .data-table th, .data-table td {
-    padding: 12px 14px;
+    padding: 10px 14px;
     text-align: left;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-light);
   }
   .data-table th {
-    background: #edf2f7;
+    background: var(--bg-subtle);
     font-weight: 600;
     color: var(--text);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
   }
   .data-table caption {
     text-align: left;
@@ -361,7 +403,46 @@
     color: var(--text);
   }
 
-  /* Error messages */
+  /* ── Bar chart ── */
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0 4px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .bar-label {
+    width: 90px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-align: right;
+    flex-shrink: 0;
+    color: var(--text);
+  }
+  .bar-track {
+    flex: 1;
+    height: 26px;
+    background: var(--bg-subtle);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Errors ── */
   .error-msg {
     color: var(--danger);
     font-size: 0.85rem;
@@ -373,91 +454,49 @@
     border-color: var(--danger);
   }
 
-  /* Live region for announcements */
+  /* ── SR only ── */
   .sr-only {
     position: absolute;
-    width: 1px;
-    height: 1px;
+    width: 1px; height: 1px;
     overflow: hidden;
     clip: rect(0,0,0,0);
     white-space: nowrap;
   }
 
-  /* Step visibility */
+  /* ── Step visibility ── */
   .step { display: none; }
   .step.active { display: block; }
 
-  /* Summary card */
+  /* ── Summary ── */
   .summary-row {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #edf2f7;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.93rem;
   }
   .summary-row:last-child { border-bottom: none; }
-  .summary-label { color: var(--text-secondary); }
-  .summary-value { font-weight: 600; }
+  .summary-label { color: var(--text-muted); }
+  .summary-value { font-weight: 700; color: var(--text); }
 
-  /* Success state */
+  /* ── Success ── */
   .success-banner {
     background: var(--accent-light);
     border: 2px solid var(--accent);
-    border-radius: var(--radius);
-    padding: 24px;
+    border-radius: var(--radius-lg);
+    padding: 28px;
     text-align: center;
   }
   .success-banner h2 { color: var(--accent); margin-bottom: 8px; }
-
-  /* Chart alternative — accessible data display */
-  .bar-chart {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 12px 0;
-  }
-  .bar-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .bar-label {
-    width: 100px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-align: right;
-    flex-shrink: 0;
-  }
-  .bar-track {
-    flex: 1;
-    height: 28px;
-    background: #edf2f7;
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-  }
-  .bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    padding-left: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--white);
-  }
 </style>
 </head>
 <body>
 
 <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
 
-<header role="banner">
-  <h1>Anlageberatung</h1>
-</header>
+<main id="main-content" class="form-wrapper">
 
-<main id="main-content" class="form-container">
-
-  <!-- Accessible Progress Stepper -->
+  <!-- Accessible progress stepper -->
   <nav aria-label="Formularschritte">
     <ol class="stepper" id="stepper">
       <li aria-current="step" id="step-ind-1">
@@ -475,7 +514,6 @@
     </ol>
   </nav>
 
-  <!-- Live region for screen reader announcements -->
   <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
   <form id="mainForm" novalidate>
@@ -484,7 +522,7 @@
     <div class="step active" id="step1" role="group" aria-labelledby="step1-heading">
       <div class="card">
         <h2 id="step1-heading">Schritt 1: Anlageprofil wählen</h2>
-        <p class="hint" style="margin:8px 0 20px">Wählen Sie Ihr bevorzugtes Risikoprofil für die Anlageberatung.</p>
+        <p class="section-hint">Wählen Sie Ihr bevorzugtes Risikoprofil für die Anlageberatung.</p>
 
         <fieldset class="radio-group">
           <legend>Risikoprofil</legend>
@@ -523,7 +561,6 @@
         </fieldset>
         <div id="profile-error" class="error-msg" hidden role="alert"></div>
 
-        <!-- Anlagebetrag with accessible slider + number input -->
         <div class="form-group" style="margin-top:24px">
           <label for="amount-input" id="amount-label">Anlagebetrag (EUR)</label>
           <p class="hint" id="amount-hint">Mindestens 5.000 EUR, maximal 100.000 EUR</p>
@@ -532,8 +569,7 @@
                    aria-label="Anlagebetrag Schieberegler"
                    aria-describedby="amount-hint">
             <input type="number" id="amount-input" min="5000" max="100000" step="1000" value="25000"
-                   aria-describedby="amount-hint"
-                   style="width:150px">
+                   aria-describedby="amount-hint">
           </div>
           <div class="slider-range">
             <span>5.000 EUR</span>
@@ -542,12 +578,10 @@
         </div>
       </div>
 
-      <!-- Accessible bar chart alternative -->
       <div class="card">
         <h3>Erwartete Renditeverteilung</h3>
-        <p class="hint" style="margin:4px 0 12px">Basierend auf dem gewählten Profil (Beispieldaten)</p>
+        <p class="section-hint">Basierend auf dem gewählten Profil (Beispieldaten)</p>
 
-        <!-- Accessible chart: uses proper labels, not just color -->
         <table class="data-table" aria-label="Renditeverteilung nach Anlageklasse">
           <caption class="sr-only">Renditeverteilung nach Anlageklasse für das gewählte Profil</caption>
           <thead>
@@ -565,7 +599,6 @@
           </tbody>
         </table>
 
-        <!-- Visual bars WITH text labels (not color-only) -->
         <div class="bar-chart" role="img" aria-label="Balkendiagramm der Renditeverteilung">
           <div class="bar-row">
             <span class="bar-label">Anleihen</span>
@@ -598,9 +631,8 @@
     <div class="step" id="step2" role="group" aria-labelledby="step2-heading">
       <div class="card">
         <h2 id="step2-heading">Schritt 2: Fondsauswahl</h2>
-        <p class="hint" style="margin:8px 0 20px">Wählen Sie die Fonds aus, in die Sie investieren möchten.</p>
+        <p class="section-hint">Wählen Sie die Fonds aus, in die Sie investieren möchten.</p>
 
-        <!-- Accessible accordion -->
         <div class="accordion">
           <h3>
             <button type="button" class="accordion-trigger" aria-expanded="false" aria-controls="fund1-panel" id="fund1-trigger"
@@ -650,7 +682,7 @@
                 <tr><th scope="row">Serviceentgelt</th><td>3,00 %</td></tr>
                 <tr><th scope="row">Kurs</th><td>186,48 EUR (27.08.2025)</td></tr>
                 <tr><th scope="row">1 Jahr p.a.</th><td style="color:#0d7c5f;font-weight:600">+6,54 %</td></tr>
-                <tr><th scope="row">3 Jahre p.a.</th><td style="color:#c53030;font-weight:600">-5,77 %</td></tr>
+                <tr><th scope="row">3 Jahre p.a.</th><td style="color:#c53030;font-weight:600">−5,77 %</td></tr>
               </tbody>
             </table>
 
@@ -661,7 +693,6 @@
           </div>
         </div>
 
-        <!-- Document upload -->
         <div class="form-group" style="margin-top:24px">
           <h3>Dokument</h3>
           <div class="file-upload">
@@ -692,7 +723,7 @@
     <div class="step" id="step3" role="group" aria-labelledby="step3-heading">
       <div class="card">
         <h2 id="step3-heading">Schritt 3: Zusammenfassung</h2>
-        <p class="hint" style="margin:8px 0 20px">Bitte überprüfen Sie Ihre Angaben vor dem Absenden.</p>
+        <p class="section-hint">Bitte überprüfen Sie Ihre Angaben vor dem Absenden.</p>
 
         <div id="summary-content">
           <div class="summary-row">
@@ -715,7 +746,7 @@
       </div>
 
       <div class="card">
-        <p style="font-size:0.85rem;color:var(--text-secondary)">
+        <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5">
           Hinweise zum Auftrag: Einmalveranlagungen werden vorbehaltlich Kontodeckung bestens an den empfohlenen Handelsplatz weitergeleitet. Sparpläne werden monatlich am 5. des Monats durchgeführt.
         </p>
       </div>
@@ -739,7 +770,6 @@
   }
 
   function goToStep(n) {
-    // Validate current step
     if (n > currentStep) {
       if (currentStep === 1) {
         const profile = document.querySelector('input[name="profile"]:checked');
@@ -754,31 +784,26 @@
       }
     }
 
-    // Hide current step
     document.getElementById('step' + currentStep).classList.remove('active');
 
-    // Update stepper
     const prevInd = document.getElementById('step-ind-' + currentStep);
     prevInd.removeAttribute('aria-current');
     if (n > currentStep) prevInd.classList.add('completed');
 
     currentStep = n;
 
-    // Show new step
     document.getElementById('step' + currentStep).classList.add('active');
     const newInd = document.getElementById('step-ind-' + currentStep);
     newInd.setAttribute('aria-current', 'step');
 
-    // Focus management — move focus to the new step heading
     const heading = document.getElementById('step' + currentStep + '-heading');
     heading.setAttribute('tabindex', '-1');
     heading.focus();
 
-    // Update summary if step 3
     if (currentStep === 3) updateSummary();
 
-    // Announce step change
     announce('Schritt ' + currentStep + ' von 3: ' + heading.textContent);
+    window.scrollTo(0, 0);
   }
 
   function toggleAccordion(id) {
@@ -789,17 +814,13 @@
     trigger.setAttribute('aria-expanded', !expanded);
     panel.hidden = expanded;
 
-    // Announce state
     announce(expanded ? 'Bereich eingeklappt' : 'Bereich ausgeklappt');
   }
 
-  // Sync slider and number input
   const slider = document.getElementById('amount-slider');
   const numInput = document.getElementById('amount-input');
 
-  slider.addEventListener('input', () => {
-    numInput.value = slider.value;
-  });
+  slider.addEventListener('input', () => { numInput.value = slider.value; });
   numInput.addEventListener('input', () => {
     const val = Math.min(100000, Math.max(5000, parseInt(numInput.value) || 5000));
     slider.value = val;
@@ -807,17 +828,19 @@
 
   function updateSummary() {
     const profile = document.querySelector('input[name="profile"]:checked');
-    document.getElementById('sum-profile').textContent = profile ? profile.value.charAt(0).toUpperCase() + profile.value.slice(1) : '—';
-    document.getElementById('sum-amount').textContent = parseInt(numInput.value).toLocaleString('de-DE') + ' EUR';
+    document.getElementById('sum-profile').textContent = profile
+      ? profile.value.charAt(0).toUpperCase() + profile.value.slice(1) : '—';
+    document.getElementById('sum-amount').textContent =
+      parseInt(numInput.value).toLocaleString('de-DE') + ' EUR';
 
     const funds = [];
     if (document.getElementById('fund1-select').checked) funds.push('Ethik Mix Ausgewogen');
     if (document.getElementById('fund2-select').checked) funds.push('Ethik Mix Ausgewogen T');
     document.getElementById('sum-funds').textContent = funds.length ? funds.join(', ') : 'Keine ausgewählt';
-    document.getElementById('sum-basis').textContent = document.getElementById('basis-confirm').checked ? 'Bestätigt' : 'Nicht bestätigt';
+    document.getElementById('sum-basis').textContent =
+      document.getElementById('basis-confirm').checked ? 'Bestätigt' : 'Nicht bestätigt';
   }
 
-  // Form submit
   document.getElementById('mainForm').addEventListener('submit', function(e) {
     e.preventDefault();
     announce('Auftrag wurde erfolgreich gesendet.');
@@ -825,13 +848,9 @@
       '<div class="success-banner"><h2>✓ Auftrag gesendet</h2><p>Ihre Anlageberatung wurde erfolgreich übermittelt. Sie erhalten eine Bestätigung per E-Mail.</p></div>';
   });
 
-  // Enter key on buttons
   document.querySelectorAll('.btn').forEach(btn => {
     btn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        btn.click();
-      }
+      if (e.key === 'Enter') { e.preventDefault(); btn.click(); }
     });
   });
 </script>
